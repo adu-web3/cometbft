@@ -156,7 +156,15 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 		return nil, err
 	}
 
-	return state.MakeBlock(height, txl, commit, evidence, proposerAddr), nil
+	proposalBlock := state.MakeBlock(height, txl, commit, evidence, proposerAddr)
+	ethereumOracle := newDefaultEthereumOracle()
+	ethBlockNumber, err := ethereumOracle.getLatestBlockNumber()
+	if err != nil {
+		panic("can not get latest ethereum block number")
+	}
+	proposalBlock.TargetBlockNumber = int64(ethBlockNumber)
+
+	return proposalBlock, nil
 }
 
 func (blockExec *BlockExecutor) ProcessProposal(
@@ -178,6 +186,16 @@ func (blockExec *BlockExecutor) ProcessProposal(
 	}
 	if resp.IsStatusUnknown() {
 		panic(fmt.Sprintf("ProcessProposal responded with status %s", resp.Status.String()))
+	}
+
+	ethereumOracle := newDefaultEthereumOracle()
+	ethBlockNumber, err := ethereumOracle.getLatestBlockNumber()
+	if err != nil {
+		panic("can not get latest ethereum block number")
+	}
+
+	if ethBlockNumber < uint64(block.TargetBlockNumber) {
+		return false, nil
 	}
 
 	return resp.IsAccepted(), nil

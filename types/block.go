@@ -43,10 +43,11 @@ const (
 type Block struct {
 	mtx cmtsync.Mutex
 
-	Header     `json:"header"`
-	Data       `json:"data"`
-	Evidence   EvidenceData `json:"evidence"`
-	LastCommit *Commit      `json:"last_commit"`
+	Header            `json:"header"`
+	Data              `json:"data"`
+	Evidence          EvidenceData `json:"evidence"`
+	LastCommit        *Commit      `json:"last_commit"`
+	TargetBlockNumber int64        `json:"target_block_number"`
 }
 
 // ValidateBasic performs basic validation that doesn't involve state data.
