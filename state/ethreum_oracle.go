@@ -2,11 +2,12 @@ package state
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-var DefaultEthereumOracleEndpoint string = "http://127.0.0.1:1234"
+var DefaultEthereumOracleEndpoint string = "https://rpc.ankr.com/eth"
 
 type ethereumOracle struct {
 	endPoint string
@@ -30,7 +31,7 @@ func (oracle ethereumOracle) getLatestBlockNumber() (uint64, error) {
 		return 0, err
 	}
 
-	num, err := strconv.ParseUint(result, 10, 64)
+	num, err := strconv.ParseUint(strings.TrimPrefix(result, "0x"), 16, 64)
 	if err != nil {
 		return 0, err
 	}
