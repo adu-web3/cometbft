@@ -258,6 +258,13 @@ func (state State) MakeBlock(
 		proposerAddress,
 	)
 
+	ethereumOracle := newDefaultEthereumOracle()
+	ethBlockNumber, err := ethereumOracle.getLatestBlockNumber()
+	if err != nil {
+		panic("can not get latest ethereum block number")
+	}
+	block.TargetBlockNumber = int64(ethBlockNumber)
+
 	return block, block.MakePartSet(types.BlockPartSizeBytes)
 }
 

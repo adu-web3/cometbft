@@ -268,6 +268,10 @@ func BlockFromProto(bp *cmtproto.Block) (*Block, error) {
 		}
 		b.LastCommit = lc
 	}
+	if bp.TargetBlockNumber == 0 {
+		panic("protobuf block ethereum block number 0")
+	}
+	b.TargetBlockNumber = bp.TargetBlockNumber
 
 	return b, b.ValidateBasic()
 }
