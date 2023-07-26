@@ -7,7 +7,7 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 )
 
-var DefaultEthereumOracleEndpoint string = "https://rpc.ankr.com/eth"
+var DefaultEthereumOracleEndpoint string = "http://127.0.0.1:1234"
 
 type ethereumOracle struct {
 	endPoint string
