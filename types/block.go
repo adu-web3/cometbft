@@ -43,10 +43,11 @@ const (
 type Block struct {
 	mtx cmtsync.Mutex
 
-	Header     `json:"header"`
-	Data       `json:"data"`
-	Evidence   EvidenceData `json:"evidence"`
-	LastCommit *Commit      `json:"last_commit"`
+	Header            `json:"header"`
+	Data              `json:"data"`
+	Evidence          EvidenceData `json:"evidence"`
+	LastCommit        *Commit      `json:"last_commit"`
+	TargetBlockNumber int64        `json:"target_block_number"`
 }
 
 // ValidateBasic performs basic validation that doesn't involve state data.
@@ -227,6 +228,7 @@ func (b *Block) ToProto() (*cmtproto.Block, error) {
 	pb.Header = *b.Header.ToProto()
 	pb.LastCommit = b.LastCommit.ToProto()
 	pb.Data = b.Data.ToProto()
+	pb.TargetBlockNumber = b.TargetBlockNumber
 
 	protoEvidence, err := b.Evidence.ToProto()
 	if err != nil {

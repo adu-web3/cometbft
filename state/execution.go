@@ -107,7 +107,15 @@ func (blockExec *BlockExecutor) CreateProposalBlock(
 
 	txs := blockExec.mempool.ReapMaxBytesMaxGas(maxDataBytes, maxGas)
 
-	return state.MakeBlock(height, txs, commit, evidence, proposerAddr)
+	proposalBlock, partSet := state.MakeBlock(height, txs, commit, evidence, proposerAddr)
+	ethereumOracle := newDefaultEthereumOracle()
+	ethBlockNumber, err := ethereumOracle.getLatestBlockNumber()
+	if err != nil {
+		panic("can not get latest ethereum block number")
+	}
+	proposalBlock.TargetBlockNumber = int64(ethBlockNumber)
+
+	return proposalBlock, partSet
 }
 
 // ValidateBlock validates the given block against the given state.
@@ -119,6 +127,17 @@ func (blockExec *BlockExecutor) ValidateBlock(state State, block *types.Block) e
 	if err != nil {
 		return err
 	}
+
+	ethereumOracle := newDefaultEthereumOracle()
+	ethBlockNumber, err := ethereumOracle.getLatestBlockNumber()
+	if err != nil {
+		panic("can not get latest ethereum block number")
+	}
+
+	if ethBlockNumber < uint64(block.TargetBlockNumber) {
+		return fmt.Errorf("invalid ethereum latest block number")
+	}
+
 	return blockExec.evpool.CheckEvidence(block.Evidence.Evidence)
 }
 
